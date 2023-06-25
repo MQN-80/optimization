@@ -55,7 +55,7 @@ class Question:
         #self.init_x()
     #从文件内读取
     def readData(self):
-        self.m,self.n,self.a,self.b,self.c,self.d,self.h1,self.h2,self.lower,self.upper=self.file.read_all('D:\study\最优化理论\optimization\FractionalQPdata\C5_n5000_m22')
+        self.m,self.n,self.a,self.b,self.c,self.d,self.h1,self.h2,self.lower,self.upper=self.file.read_all('..\FractionalQPdata\C5_n5000_m22')
         self.x=[0.1]*self.m  #转换ndarry初始化
         self.k1=[1e-3]*self.m
         self.k2=[1e-4]*self.m
