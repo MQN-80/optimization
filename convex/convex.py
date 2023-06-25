@@ -55,7 +55,7 @@ class Question:
         #self.init_x()
     #从文件内读取
     def readData(self):
-        self.m,self.n,self.a,self.b,self.c,self.d,self.h1,self.h2,self.lower,self.upper=self.file.read_all('D:\study\最优化理论\optimization\FractionalQPdata\C2_n2000_m22')
+        self.m,self.n,self.a,self.b,self.c,self.d,self.h1,self.h2,self.lower,self.upper=self.file.read_all('D:\study\最优化理论\optimization\FractionalQPdata\C5_n5000_m22')
         self.x=[0.1]*self.m  #转换ndarry初始化
         self.k1=[1e-3]*self.m
         self.k2=[1e-4]*self.m
@@ -76,22 +76,26 @@ class Question:
         return torch.sum(torch.square(torch.relu(self.x-self.upper))+torch.square(torch.relu(self.lower-self.x)))
     # 计算导数
     # 梯度下降算法,step是选择步长,用于更新x的值,group是重复组数
-    def descent(self,groups=50,k=1000):
+    def descent(self,groups=20,k=1000):
+        optim_change=[]  #记录最优值变换
         #optimizer = torch.optim.Adam([self.x], lr=0.1)  #定义优化器
         optimizer=torch.optim.LBFGS([self.x], lr=0.1) 
         def closure():
             optimizer.zero_grad()  # 清空梯度
-            res=self.solution()+self.equal_con()*k+self.noequal_con()*k     # 计算损失
+            res=self.solution()+self.equal_con()*k+self.noequal_con()*k     # 计算最优值
             res.backward()        # 反向传播
             return res
         for i in range(groups):
             #使用牛顿法进行迭代
+            res=self.solution()+self.equal_con()*k+self.noequal_con()*k
+            optim_change.append(res.item())  #用于绘图,节约时间可以直接删除
             optimizer.step(closure)
             if self.equal_con()<0.01 and self.noequal_con()<0.01:
                 break
         print("最优值为"+str(self.solution().item()))    
         print("等式约束误差:"+str(self.equal_con().item())) 
         print("不等式约束误差:"+str(self.noequal_con().item()))
+        self.pic.solutionChange(optim_change)
     def process(self):
         self.readData()
         self.changeArray()
